@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>UniBot</title>
+    <meta
+      name="Description"
+      content="Unibot - инструмент для создания информационных Telegram-ботов для учебных заведений, их групп и классов. © tCoMaD"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#343A40" />
+    <link rel="apple-touch-icon" href="icon_ios.png" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, maximum-scale=1, height=device-height, user-scalable=no, initial-scale=1, viewport-fit=cover"
+    />
+    <style>
+      body {
+        height: auto;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>JavaScript is required for this page.</noscript>
+
+    <div id="app"></div>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
+
+    <script src="inobounce.min.js"></script>
+  </body>
+</html>

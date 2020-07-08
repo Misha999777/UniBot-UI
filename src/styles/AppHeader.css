@@ -1,0 +1,7 @@
+@supports (-webkit-overflow-scrolling: touch) {
+  .app-header-padding {
+    padding-top: calc(10px + env(safe-area-inset-top));
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+}
