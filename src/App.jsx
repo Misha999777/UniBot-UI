@@ -2,128 +2,148 @@ import React, {Component} from "react";
 import {Route, Switch} from "react-router";
 import ReactLoading from "react-loading";
 import LoadingOverlay from "react-loading-overlay";
-import withRouter from "react-router-dom/es/withRouter";
-
-import PWAPrompt from 'react-ios-pwa-prompt'
-
-import {ACCESS_TOKEN} from "./constants";
+import {withRouter} from "react-router-dom";
 
 import "./styles/App.css";
 
 import AppHeader from "./components/AppHeader";
-import Login from "./components/Login";
-import Manage from "./components/Manage";
-import NewWeek from "./components/NewWeek";
+import Manage from "./pages/Manage";
+import NewWeek from "./pages/NewWeek";
+import Bots from "./pages/Bots";
+import CreateBot from "./pages/CreateBot";
+import {AuthService} from "./service/AuthService";
 
 class App extends Component {
 
-  state = {
-    isAuthenticated: false,
-    inProgress: false,
-    section: "Расписание",
-  };
+    state = {
+        isAuthenticated: false,
+        inProgress: false,
+        section: "Расписание",
+        title: "Первая неделя",
+        subtitle: "Вторая неделя",
+        bot: ""
+    };
 
-  constructor(props) {
-    super(props);
-    this.child = React.createRef();
-  }
-
-  componentDidMount = () => {
-    window.iNoBounce.disable();
-    if (localStorage.getItem(ACCESS_TOKEN)) {
-      this.props.history.push("/admin");
-    } else if (this.props.location.pathname !== "/login" && this.props.location.pathname !== "/prompt") {
-      this.switchDone(false);
-      this.props.history.push("/login");
+    constructor(props) {
+        super(props);
+        this.child = React.createRef();
+        this.authService = new AuthService();
     }
-  };
 
-  handleLogin = (response) => {
-    localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-    this.props.history.push("/admin");
-  };
-
-  switchDone = (d) => {
-    this.setState({inProgress: d});
-  };
-
-  setSection = (section) => {
-    this.setState({section: section},   () => {
-      this.child.current.componentDidMount();
-    });
-  }
-
-  render() {
-    return (
-        <LoadingOverlay
-            styles={{
-              overlay: (base) => ({
-                ...base,
-                background: "rgba(0, 0, 0, 0)"
-              })
-            }}
-            active={this.state.inProgress}
-            spinner={
-              <div className="loader">
-                <ReactLoading type={"bars"} color={"black"}/>
-              </div>
+    componentDidMount() {
+        this.authService.loadUser().then(() => {
+            if (this.authService.isLoggingIn) {
+                this.authService.completeLogin().then(() => {
+                    this.checkLogin();
+                });
+            } else if (this.authService.isLoggingOut) {
+                this.authService.completeLogout().then(() => {
+                    this.checkLogin();
+                });
+            } else {
+                this.checkLogin();
             }
-        >
-          <div className={"app-container"}>
-            <PWAPrompt promptOnVisit={1}
-                       timesToShow={3}
-                       copyTitle="Этот сайт поддерживает установку"
-                       copyBody="Его можно добавить на экран домой и пользываться им как приложением"
-                       copyShareButtonLabel="Нажмите на кнопку действий"
-                       copyAddHomeButtonLabel="Нажмите добавить на экран домой"
-                       copyClosePrompt="Закрыть"
-                       permanentlyHideOnDismiss={false}/>
-            {localStorage.getItem(ACCESS_TOKEN) && (
-                <AppHeader
-                    setSection={this.setSection}
-                    {...this.props}
-                />
-            )}
-            <div className="d-flex">
-              <div className="w-100">
-                <Switch>
-                  <Route
-                      path="/login"
-                      exact
-                      render={(props) => (
-                          <Login
-                              switchDone={this.switchDone}
-                              handleLogin={this.handleLogin}
-                              {...props}
-                          />
-                      )}
-                  />
-                  <Route
-                      path="/admin"
-                      exact
-                      render={(props) => (
-                          <Manage
-                              switchDone={this.switchDone}
-                              section={this.state.section}
-                              ref={this.child}
-                              {...props}
-                          />
-                      )}
-                  />
-                  <Route
-                      path="/newWeek"
-                      exact
-                      render={(props) => (
-                          <NewWeek switchDone={this.switchDone} {...props} />
-                      )}
-                  />
-                </Switch>
-              </div>
-            </div>
-          </div>
-        </LoadingOverlay>
-    );
-  }
+        })
+    };
+
+    checkLogin() {
+        if (this.authService.isLoggedIn) {
+            this.props.history.push("/bots");
+        } else {
+            this.authService.login();
+        }
+    }
+
+    switchDone = (d) => {
+        this.setState({inProgress: d});
+    };
+
+    setSection = (section) => {
+        this.setState({section: section.name, title: section.title, subtitle: section.subtitle}, () => {
+            this.child.current.componentDidMount();
+        });
+    }
+
+    setBot = (bot) => {
+        this.setState({bot: bot});
+    }
+
+    render() {
+        return (
+            <LoadingOverlay
+                styles={{
+                    overlay: (base) => ({
+                        ...base,
+                        background: "rgba(0, 0, 0, 0)"
+                    })
+                }}
+                active={this.state.inProgress}
+                spinner={
+                    <div className="loader">
+                        <ReactLoading type={"bars"} color={"black"}/>
+                    </div>
+                }
+            >
+                <div className={"app-container"}>
+                    <AppHeader
+                        setSection={this.setSection}
+                        authService={this.authService}
+                        {...this.props}
+                    />
+                    <div className="d-flex">
+                        <div className="w-100">
+                            <Switch>
+                                <Route
+                                    path="/bots"
+                                    exact
+                                    render={(props) => (
+                                        <Bots
+                                            setBot={this.setBot}
+                                            switchDone={this.switchDone}
+                                            {...props}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    path="/create"
+                                    exact
+                                    render={(props) => (
+                                        <CreateBot
+                                            switchDone={this.switchDone}
+                                            {...props}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    path="/admin"
+                                    render={(props) => (
+                                        <Manage
+                                            switchDone={this.switchDone}
+                                            section={this.state.section}
+                                            title={this.state.title}
+                                            subtitle={this.state.subtitle}
+                                            bot={this.state.bot}
+                                            ref={this.child}
+                                            {...props}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    path="/newWeek"
+                                    exact
+                                    render={(props) => (
+                                        <NewWeek switchDone={this.switchDone}
+                                                 bot={this.state.bot}
+                                                 {...props} />
+                                    )}
+                                />
+                            </Switch>
+                        </div>
+                    </div>
+                </div>
+            </LoadingOverlay>
+        );
+    }
 }
 
 export default withRouter(App);

@@ -1,16 +1,16 @@
 .expT {
-  word-break: break-all;
-  width: 85%;
-  padding: 35px;
-  margin: 50px auto 50px;
-  text-align: center;
-  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+    word-break: break-all;
+    width: 85%;
+    padding: 35px;
+    margin: 50px auto 50px;
+    text-align: center;
+    box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
 }
 
 .title {
-  font-size: 1.5em;
-  font-weight: 500;
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: rgba(0, 0, 0, 0.65);
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: rgba(0, 0, 0, 0.65);
 }
