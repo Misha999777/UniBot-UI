@@ -1,6 +1,6 @@
 # UniBot UI
 
-[![Build Status](https://github.com/Misha999777/UniBot-UI/workflows/Node.js%20CI/badge.svg)](https://github.com/Misha999777/UniBot-UI/actions?query=workflow%3A%22Node.js+CI%22)
+[![Build Status](https://github.com/Misha999777/UniBot-UI/workflows/Main/badge.svg)](https://github.com/Misha999777/UniBot-UI/actions?query=workflow%3A%22Main%22)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 Web client for UniBot. Uses [React](https://reactjs.org/).
